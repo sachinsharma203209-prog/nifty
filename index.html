@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NIFTY 50 BUCKET</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body {
       background: linear-gradient(to bottom, #111827, #1f2937);
@@ -96,6 +97,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>NIFTY 50 BUCKET</h1>
@@ -104,7 +106,9 @@
     <div class="water" id="water"></div>
   </div>
 
-  <div class="level-text">Current Level: <span id="level">0</span>%</div>
+  <div class="level-text">
+    Current Level: <span id="level">0</span>%
+  </div>
 
   <div class="controls">
     <button class="add" onclick="openModal('add')">Add %</button>
@@ -115,13 +119,18 @@
   <div class="modal" id="confirmModal">
     <div class="modal-box">
       <h2 id="modalTitle">Enter Details</h2>
-      
-      <!-- Password only required for ADD -->
-      <input type="password" id="passwordInput" placeholder="Enter Admin Password" style="display:none;" />
-      
-      <!-- Custom Percentage Input -->
-      <input type="number" id="percentInput" placeholder="Enter percentage (e.g. 12)" min="1" max="100" />
-      
+
+      <!-- Password only for ADD -->
+      <input type="password" id="passwordInput"
+             placeholder="Enter Admin Password"
+             style="display:none;" />
+
+      <!-- Custom Percentage -->
+      <input type="number"
+             id="percentInput"
+             placeholder="Enter percentage (e.g. 12.5)"
+             step="0.1" min="0" />
+
       <button class="add" onclick="confirmAction()">Submit</button>
       <button class="remove" onclick="closeModal()">Cancel</button>
     </div>
@@ -130,11 +139,21 @@
   <script>
     let waterLevel = 0;
     let actionType = null;
-    const ADMIN_PASSWORD = "admin123"; // change password here
+    const ADMIN_PASSWORD = "admin123"; // Change password here
+
+    // Load saved value when page loads
+    window.onload = function () {
+      const savedLevel = localStorage.getItem("waterLevel");
+      if (savedLevel !== null) {
+        waterLevel = parseFloat(savedLevel);
+      }
+      updateWater();
+    };
 
     function updateWater() {
       document.getElementById("water").style.height = waterLevel + "%";
-      document.getElementById("level").innerText = 10;
+      document.getElementById("level").innerText = waterLevel.toFixed(1);
+      localStorage.setItem("waterLevel", waterLevel);
     }
 
     function openModal(type) {
@@ -143,12 +162,14 @@
       document.getElementById("percentInput").value = "";
       document.getElementById("passwordInput").value = "";
 
-      if (type === 'add') {
+      if (type === "add") {
         document.getElementById("passwordInput").style.display = "block";
-        document.getElementById("modalTitle").innerText = "Admin Add - Enter Password & %";
+        document.getElementById("modalTitle").innerText =
+          "Admin Add - Enter Password & %";
       } else {
         document.getElementById("passwordInput").style.display = "none";
-        document.getElementById("modalTitle").innerText = "Subtract - Enter %";
+        document.getElementById("modalTitle").innerText =
+          "Subtract - Enter %";
       }
     }
 
@@ -157,27 +178,33 @@
     }
 
     function confirmAction() {
-      let value = parseInt(document.getElementById("percentInput").value);
+      let value = parseFloat(
+        document.getElementById("percentInput").value
+      );
 
       if (isNaN(value) || value <= 0) {
         alert("Enter valid percentage ❌");
         return;
       }
 
-      if (actionType === 'add') {
-        let pass = document.getElementById("passwordInput").value;
+      if (actionType === "add") {
+        let pass =
+          document.getElementById("passwordInput").value;
+
         if (pass !== ADMIN_PASSWORD) {
           alert("Wrong Password ❌");
           return;
         }
+
         waterLevel += value;
-        if (waterLevel > 100) waterLevel = 100;
       }
 
-      if (actionType === 'remove') {
+      if (actionType === "remove") {
         waterLevel -= value;
-        if (waterLevel < 0) waterLevel = 0;
       }
+
+      if (waterLevel > 100) waterLevel = 100;
+      if (waterLevel < 0) waterLevel = 0;
 
       updateWater();
       closeModal();
