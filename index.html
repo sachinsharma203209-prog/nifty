@@ -128,13 +128,13 @@
   </div>
 
   <script>
-    let waterLevel = 10;
+    let waterLevel = 0;
     let actionType = null;
     const ADMIN_PASSWORD = "admin123"; // change password here
 
     function updateWater() {
       document.getElementById("water").style.height = waterLevel + "%";
-      document.getElementById("level").innerText = waterLevel;
+      document.getElementById("level").innerText = 10;
     }
 
     function openModal(type) {
