@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NIFTY 50 BUCKET</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #111827, #1f2937);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .bucket {
+      width: 220px;
+      height: 320px;
+      border: 5px solid #9ca3af;
+      border-bottom-left-radius: 90px;
+      border-bottom-right-radius: 90px;
+      position: relative;
+      overflow: hidden;
+      background: #374151;
+    }
+
+    .water {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to top, #10b981, #34d399);
+      transition: height 0.5s ease;
+    }
+
+    .controls {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add { background-color: #16a34a; color: white; }
+    .remove { background-color: #dc2626; color: white; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: #1f2937;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 320px;
+    }
+
+    .modal-box input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+      text-align: center;
+      color: black;
+    }
+
+    .level-text {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>NIFTY 50 BUCKET</h1>
+
+  <div class="bucket">
+    <div class="water" id="water"></div>
+  </div>
+
+  <div class="level-text">Current Level: <span id="level">0</span>%</div>
+
+  <div class="controls">
+    <button class="add" onclick="openModal('add')">Add %</button>
+    <button class="remove" onclick="openModal('remove')">Subtract %</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-box">
+      <h2 id="modalTitle">Enter Details</h2>
+      
+      <!-- Password only required for ADD -->
+      <input type="password" id="passwordInput" placeholder="Enter Admin Password" style="display:none;" />
+      
+      <!-- Custom Percentage Input -->
+      <input type="number" id="percentInput" placeholder="Enter percentage (e.g. 12)" min="1" max="100" />
+      
+      <button class="add" onclick="confirmAction()">Submit</button>
+      <button class="remove" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let waterLevel = 0;
+    let actionType = null;
+    const ADMIN_PASSWORD = "admin123"; // change password here
+
+    function updateWater() {
+      document.getElementById("water").style.height = waterLevel + "%";
+      document.getElementById("level").innerText = waterLevel;
+    }
+
+    function openModal(type) {
+      actionType = type;
+      document.getElementById("confirmModal").style.display = "flex";
+      document.getElementById("percentInput").value = "";
+      document.getElementById("passwordInput").value = "";
+
+      if (type === 'add') {
+        document.getElementById("passwordInput").style.display = "block";
+        document.getElementById("modalTitle").innerText = "Admin Add - Enter Password & %";
+      } else {
+        document.getElementById("passwordInput").style.display = "none";
+        document.getElementById("modalTitle").innerText = "Subtract - Enter %";
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("confirmModal").style.display = "none";
+    }
+
+    function confirmAction() {
+      let value = parseInt(document.getElementById("percentInput").value);
+
+      if (isNaN(value) || value <= 0) {
+        alert("Enter valid percentage ❌");
+        return;
+      }
+
+      if (actionType === 'add') {
+        let pass = document.getElementById("passwordInput").value;
+        if (pass !== ADMIN_PASSWORD) {
+          alert("Wrong Password ❌");
+          return;
+        }
+        waterLevel += value;
+        if (waterLevel > 100) waterLevel = 100;
+      }
+
+      if (actionType === 'remove') {
+        waterLevel -= value;
+        if (waterLevel < 0) waterLevel = 0;
+      }
+
+      updateWater();
+      closeModal();
+    }
+  </script>
+
+</body>
+</html>
